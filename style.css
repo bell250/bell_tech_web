@@ -1,0 +1,135 @@
+
+*{
+  box-sizing: border-box;
+}
+body {
+	background: #F0EAD6;/*url("images/background.png") repeat;*/
+}
+#main-head{
+background: #2A4B7C;
+color: white;
+}
+
+
+#main-head h1{
+	text-align: center;
+	padding: 20px;
+	text-transform: capitalize;
+	letter-spacing: 0.01em;
+	font-family:serif arial;
+}
+.a1 {
+ 	width: 98.2%;
+ 	border: 2px solid #000075;
+}
+.container{
+	position: sticky;
+	top: 0px;
+}
+#nav1{
+	width: 100%;
+	background:#264E36;
+	height: 50px;
+	margin-left:0px;
+  box-shadow:0 0 10px #333;
+}
+nav ul li {
+	display: inline;
+
+
+}
+nav ul li a{
+	margin-top:0px;
+ 	color: white;
+ 	font-weight: bold; 
+ 	display: inline-block;
+ 	padding: 15px;
+ 	width: 100px;
+ 	text-align: center;
+ 	text-decoration: none;
+}
+ nav ul li a:hover {
+ 	color: white;
+ 	background-color: #008000;
+ }
+  nav ul li a:active {
+ 	background-color: #808000;
+ }
+ nav ul li a:active {
+ 	color: #008080;
+ 	background-color: #FFFFFF;
+ }
+ .social{
+  position: fixed;
+  bottom: 200px;
+  width: 190px;
+  height: 200px;
+  background:#ded;
+  box-shadow:0 0 10px #333;
+  border-radius:12px;
+  
+  
+
+}
+.social ul li{
+  margin-left: 0px;
+  list-style: none;
+  padding: 10px 0px;
+  text-transform:capitalize;
+}
+ iframe{border: 1px solid grey ;
+  margin-left: 200px;
+  background-color: white;
+  background: url("background.png") repeat;
+ }
+
+ .footers {
+  position: relative;
+ 	width: 99%;
+ 	color: white;
+ 	font-weight: bold;
+ 	font-size: 16px;
+ 	min-height: 200px;
+ 	background-color:#00004d;
+  opacity: ;
+}
+.footers .copy{
+  text-align: center;
+}
+.technologies{
+  padding: 20px;
+    display: grid;
+    grid-template-columns:30% 30% 30%;
+    gap:44px;
+  }
+  .forms{
+    display: none;
+  }
+  @media screen and (max-width: 800px) {
+  img { 
+  margin-left: 0px;  
+    width: 100%;
+    padding: 0;
+  }
+  .technologies{
+  padding: 20px;
+    display: grid;
+    grid-template-columns:100%;
+    gap:5px;
+  }
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+  iframe { 
+  margin-left: 0px;  
+    width: 100%;
+    padding: 0;
+  }
+  .social{
+    display: none;
+  }
+  .right{
+    display: none;
+  }
+}

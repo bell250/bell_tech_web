@@ -1,0 +1,144 @@
+<html dir="ltr">
+    <head>
+        <title>BK Yacu - Bank of Kigali Ltd</title>
+        
+        <link rel="stylesheet" type="text/css" href="/js/dijit/themes/claro/claro.css"/>
+        <link rel="stylesheet" type="text/css" href="/js/dojox/grid/resources/Grid.css"/>
+        <link rel="stylesheet" type="text/css" href="/js/dojox/grid/resources/claroGrid.css"/>
+        <link rel="stylesheet" type="text/css" href="/js/dojox/grid/enhanced/resources/claro/EnhancedGrid.css"/>
+        <style type="text/css">
+            body, html {width:100%;height:100%;margin:0px;padding:0px;font-family:'trebuchet MS','Lucida sans',Arial;font-size: 11px !important;color: #222;}
+            .dojoxGrid table {margin:0px;font-family:'trebuchet MS','Lucida sans',Arial;font-size: 11px !important;color: #222;}
+        </style>
+        <link rel="stylesheet" type="text/css" href="/css/app.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/assistant.css"/>
+        <script>dojoConfig = {parseOnLoad: true}</script>
+        <script type="text/javascript" src="/js/dojo/dojo.js" djConfig="parseOnLoad: true">
+        </script>
+        <script type="text/javascript">
+            var pathToDwrServlet = "/dwr";
+        </script>
+        <script src="/dwr/engine.js" type="text/javascript"></script>
+        <script src="/dwr/util.js" type="text/javascript"></script>
+        <script src="/js/app.js" type="text/javascript"></script>
+        <script src="/js/jquery.min.js" type="text/javascript"></script>
+        <script src="/js/jquery.transit.min.js" type="text/javascript"></script>
+        <script src="/dwr/interface/AgentAssistantUIService.js" type="text/javascript"></script>
+        <script src="/dwr/interface/AssistantUIService.js" type="text/javascript"></script>
+        <script src="/dwr/interface/WSIntegrator.js" type="text/javascript"></script>
+        <script type="text/javascript">UIService = AgentAssistantUIService;</script>
+        <script src="/js/AssistantDepositUI.js" type="text/javascript"></script>
+        <script src="/js/AssistantCollectionUI.js" type="text/javascript"></script>
+        <script src="/js/AssistantWithdrawalUI.js" type="text/javascript"></script>
+        <script src="/js/AssistantPayBillClient.js" type="text/javascript"></script>
+        <script src="/js/AssistantPayBillUI.js" type="text/javascript"></script>
+        <script src="/js/AssistantSendMoneyUI.js" type="text/javascript"></script>
+        <script src="/js/AssistantROLPaymentUI.js" type="text/javascript"></script>
+        <script src="/js/AssistantServiceRequestUI.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            dwr.engine._defaultPath = "/dwr";
+            dwr.engine.setTimeout(180000);
+            dwr.engine.setErrorHandler(function(errorString, exception) {
+                alert("An error has occurred: " + errorString);
+            });
+            dwr.engine.setTextHtmlHandler(function() {
+                alert("Your session may have expired, please login again.");
+                document.location = 'https://agency.bk.rw';
+            });
+            AgentAssistantUIService._path = "/dwr";
+            AssistantUIService._path = "/dwr";
+            WSIntegrator._path = "/dwr";
+            dojo.require("app.dojoui");
+            var loads = 0;
+            function useLoadingImage() {
+                dwr.engine.setPreHook(function() {
+                    loads++;
+                    var disabledImageZone = document.getElementById("disabledImageZone");
+                    if (!disabledImageZone) {
+                        disabledImageZone = document.createElement("div");
+                        disabledImageZone.setAttribute("id", "disabledImageZone");
+                        disabledImageZone.style.position = "absolute";
+                        disabledImageZone.style.zIndex = "2000";
+                        disabledImageZone.style.left = "0px";
+                        disabledImageZone.style.top = "0px";
+                        disabledImageZone.style.width = "100%";
+                        disabledImageZone.style.height = "26px";
+                        var imageZone = document.createElement("img");
+                        imageZone.setAttribute("id", "imageZone");
+                        imageZone.setAttribute("src", "/img/load.gif");
+                        imageZone.style.position = "absolute";
+                        imageZone.style.top = "0px";
+                        imageZone.style.right = "5px";
+                        disabledImageZone.appendChild(imageZone);
+                        document.body.appendChild(disabledImageZone);
+                    } else {
+                        disabledImageZone.style.visibility = "visible";
+                    }
+                });
+                dwr.engine.setPostHook(function() {
+                    loads--;
+                    if (loads <= 0)
+                        document.getElementById("disabledImageZone").style.visibility = "hidden";
+                    if (loads < 0)
+                        loads = 0;
+                });
+            }
+            function checkFloatBalance() {
+                WSIntegrator.checkFloatAccountBalance(function(ret) {
+                    if (ret.success) {
+                        $("#floatAccountBalance").html("Float balance: " + dojo.number.format(ret.item.floatAccountBalance, {pattern: "#,##0"}));
+                    }
+                });
+            }
+            dojo.addOnLoad(function() {
+                useLoadingImage();
+                UIService.getMyCredentialsProfile(handleMyCredentialsProfile);
+                initCashDepositsTab();
+                initCashCollectionsTab();
+                initCashWithdrawalsTab();
+                initSendMoneysTab();
+                initROLPaymentsTab();
+                loadPayBillProductsProfile();
+                initPayBillDiv();
+                listServiceRequests();
+                setInterval(checkFloatBalance, 300000);
+            });
+        </script>
+    </head>
+    <body class="claro">
+        <table style="width:100%"><tr><td><img src="/img/bk_layer.png" class="img-rounded" alt="BK Yacu"></td>
+                <td><h3 id="agentOutlet"></h3>
+                    <h3 id="device"></h3>
+                    <h3 id="agentAssistant"></h3></td>
+                <td><br/><br/><h2 style="color:#0675BC" id="floatAccountBalance">Float balance</h2>
+                    <b><a href="javascript:checkFloatBalance();void(0);">Check float balance</a></b>
+                </td>
+                <td align="right"><b><a href="/dispatcher/j_spring_security_logout">Logout</a></b><br/><br/><br/><br/>
+                    <b><a href="javascript:changeMyPassword(AgentAssistantUIService.changeMyPassword,false);void(0);">Change password</a></b></td></tr></table>
+        <div data-dojo-type="dijit/layout/TabContainer" style="width: 100%;height:85%;">
+            <div id="cashDepositsTab" data-dojo-type="dijit/layout/ContentPane" title="CASH DEPOSIT" data-dojo-props="selected:true">
+            </div>
+            <div id="cashWithdrawalsTab" data-dojo-type="dijit/layout/ContentPane" title="CASH WITHDRAWAL">
+            </div>
+            <div id="cashCollectionsTab" data-dojo-type="dijit/layout/ContentPane" title="CASH COLLECTION">
+            </div>
+            <div id="sendMoneysTab" data-dojo-type="dijit/layout/ContentPane" title="SEND MONEY">
+            </div>
+            <div id="rOLPaymentsTab" data-dojo-type="dijit/layout/ContentPane" title="IREMBO">
+            </div>
+            <div id="paybillTab" data-dojo-type="dijit/layout/ContentPane" title="PAY BILL">
+                <table cellpadding="4" cellspacing="4" width="100%">
+                    <tr valign="top">
+                        <td style="width: 200px;background-color: #ecf3fb">
+                            <div id="paybillProds">
+                            </div>
+                        </td>
+                        <td><div id="paybillDiv"></div></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="serviceRequestsTab" data-dojo-type="dijit/layout/ContentPane" title="SERVICE REQUEST">
+            </div>
+        </div>
+    </body>
+</html>
